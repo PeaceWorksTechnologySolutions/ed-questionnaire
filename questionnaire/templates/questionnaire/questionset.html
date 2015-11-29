@@ -40,9 +40,16 @@
     {% endif %}
 
 
+    <h2 class="questionset-title">
+    {% if questionset.heading %}
+        {{ questionset.heading }}
+    {% endif %}
+    </h2>
 
-    <div class="questionset-title">
-    {{ questionset.text }}
+    <div class="questionset-text">
+    {% if questionset.text %}
+        {{ questionset.text }}
+    {% endif %}    
     </div>
 
     <form name="qform" id="qform" action="{{ request.path }}" method="POST">
@@ -54,7 +61,8 @@
         {% for question, qdict in qlist %}
         {% with errors|dictget:question.number as error %}
 
-            <div class="question type_{{ qdict.qtype }} {% if error %} error prepend-top{% endif %}{{ qdict.qnum_class }}{{ qdict.qalpha_class }}" id="qc_{{ question.number }}" {{qdict.checkstring|safe}} style="{{qdict.css_style}}">
+            <div class="question type_{{ qdict.qtype }} {% if error %} error prepend-top{% endif %}{{ qdict.qnum_class }}{{ qdict.qalpha_class }}" id="qc_{{ question.number }}" {{qdict.checkstring|safe}} style="{{qdict.css_style}}"> 
+
                 {% if request.user.is_staff %}
                     <span class="pull-right">
                         <a href="/admin/questionnaire/question/{{ question.id }}/">
@@ -103,6 +111,7 @@
                 <a class="back-link pull-left" href="{{ prev_url }}">{% trans "return to previous page" %}</a>
             {% endif %}
     </form>
+
     {% if debug_questionnaire %}
         Previous Answers:
         {% for answer in current_answers %}

@@ -5,7 +5,11 @@
 
 .questionset-title {
     /* margin right is there to make space for the progressbar */
-    margin: 0 220px 25px 0;
+    margin: 0 220px 25px 0;    
+}
+
+.questionset-text {
+    margin-bottom: 25px;
 }
 
 .question-text {
