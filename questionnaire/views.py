@@ -344,7 +344,9 @@ def questionnaire(request, runcode=None, qs=None):
             else:
                 request.session['runcode'] = runcode
                 args = []
+
             return HttpResponseRedirect(reverse("questionnaire", args=args))
+
 
     runinfo = get_runinfo(runcode)
 
@@ -556,7 +558,6 @@ def show_questionnaire(request, runinfo, errors={}):
         # if we got here the questionset will at least contain one question
         # which passes, so this is all we need to check for
         question_visible = question_satisfies_checks(question, runinfo) or show_all
-
         Type = question.get_type()
         _qnum, _qalpha = split_numal(question.number)
 
@@ -576,7 +577,7 @@ def show_questionnaire(request, runinfo, errors={}):
 
         # add javascript dependency checks
         cd = question.getcheckdict()
-        depon = cd.get('requiredif', None) or cd.get('dependent', None)
+        depon = cd.get('requiredif', None) or cd.get('dependent', None) or cd.get('shownif', None)
         if depon:
             # extra args to BooleanParser are not required for toString
             parser = BooleanParser(dep_check)
