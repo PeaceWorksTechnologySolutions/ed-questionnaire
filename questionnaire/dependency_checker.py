@@ -137,6 +137,10 @@ def dep_check(expr, runinfo, answerdict):
 
     # Convert freeform question type answers from a list of lists to just a single list.
     # FIXME: Figure out why the hell freeform questions store their values as lists within lists.
-    answer_list = explode_answer_into_list(actual_answer)
+    #Don't shrink to one list if it isn't even a list though, otherwise we could get a string 
+    #becoming a character array and falsely failing the comparison.
+    answer_list = actual_answer #might not actually be a list but meh
+    if type(actual_answer) == type(list()):
+        answer_list = explode_answer_into_list(actual_answer)
 
     return check_actual_answers_against_expression(check_answer, answer_list, check_question)
