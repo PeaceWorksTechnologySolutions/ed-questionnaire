@@ -345,7 +345,15 @@ class Question(models.Model):
     def choices(self):
         if self.type == 'sameas':
             return self.sameas().choices()
-        res = Choice.objects.filter(question=self).order_by('sortid')
+
+        res = None
+        if 'samechoicesas' in parse_checks(self.checks):
+            number_to_grab_from = parse_checks(self.checks)['samechoicesas']
+            choicesource = Question.objects.get(number=number_to_grab_from)
+            if not choicesource == None:
+                res = Choice.objects.filter(question=choicesource).order_by('sortid')
+        else:        
+            res = Choice.objects.filter(question=self).order_by('sortid')
         return res
 
     def is_custom(self):
