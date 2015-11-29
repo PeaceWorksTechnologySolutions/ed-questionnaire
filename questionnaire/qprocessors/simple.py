@@ -1,7 +1,13 @@
 from questionnaire import *
+from questionnaire.utils import get_runid_from_request
+from questionnaire.modelutils import get_value_for_run_question
 from django.utils.translation import ugettext as _
 from json import dumps
+import ast
 
+
+#true if either 'required' or if 'requiredif' is satisfied
+#def is_required
 
 @question_proc('choice-yesno', 'choice-yesnocomment', 'choice-yesnodontknow')
 def question_yesno(request, question):
@@ -21,6 +27,14 @@ def question_yesno(request, question):
         hasdontknow = True
     else:
         hasdontknow = False
+
+    #try the database before reverting to default
+    possiblevalue = get_value_for_run_question(get_runid_from_request(request), question.id)
+    if not possiblevalue == None:
+        #save process always listifies the answer so we unlistify it to put it back in the field
+        valueaslist = ast.literal_eval(possiblevalue)
+        if len(valueaslist) > 0:
+            val = valueaslist[0]
 
     if not val:
         if cd.get('default', None):
@@ -55,6 +69,18 @@ def question_open(request, question):
     value = question.getcheckdict().get('default', '')
     if key in request.POST:
         value = request.POST[key]
+    else:
+        #also try to get it from the database so we can handle back/forward in which post has been cleared
+        possiblevalue = get_value_for_run_question(get_runid_from_request(request), question.id)
+        if not possiblevalue == None:
+            #save process always listifies the answer so we unlistify it to put it back in the field
+            valueaslist = ast.literal_eval(possiblevalue)
+            if len(valueaslist) > 0:
+                value = valueaslist[0]
+#            print 'open or open-textfield question proc, value found: ', possiblevalue, ', type ', type(possiblevalue), ', value used ', value
+#        else:
+#            print 'open or open-textfield question proc, no value found'
+#        print 'open or open-textfield question proc, runid , question_id ', get_runid_from_request(request), ',', question.id
     return {
         'required': question.getcheckdict().get('required', False),
         'value': value,
@@ -63,6 +89,7 @@ def question_open(request, question):
 
 @answer_proc('open', 'open-textfield', 'choice-yesno', 'choice-yesnocomment', 'choice-yesnodontknow')
 def process_simple(question, ansdict):
+#    print 'process_simple has question, ansdict ', question, ',', ansdict
     checkdict = question.getcheckdict()
     ans = ansdict['ANSWER'] or ''
     qtype = question.get_type()
@@ -78,7 +105,8 @@ def process_simple(question, ansdict):
             if checkdict.get('required-no', False) and ans == 'no':
                 raise AnswerException(_(u'Field cannot be blank'))
     else:
-        if not ans.strip() and checkdict.get('required', False):
+        #the key here is to note that requiredif has already been evaluated or we wouldn't have reached this point, so we don't have to recheck
+        if not ans.strip() and (checkdict.get('required', False) or checkdict.get('requiredif', False)):
             raise AnswerException(_(u'Field cannot be blank'))
     if ansdict.has_key('comment') and len(ansdict['comment']) > 0:
         return dumps([ans, [ansdict['comment']]])

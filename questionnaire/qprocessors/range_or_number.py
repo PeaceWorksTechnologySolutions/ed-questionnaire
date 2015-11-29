@@ -2,6 +2,9 @@ from questionnaire import *
 from django.conf import settings
 from django.utils.translation import ugettext as _
 from json import dumps
+import ast
+from questionnaire.utils import get_runid_from_request
+from questionnaire.modelutils import get_value_for_run_question
 
 @question_proc('range', 'number')
 def question_range_or_number(request, question):
@@ -11,7 +14,13 @@ def question_range_or_number(request, question):
     rstep = parse_step(cd)
     runit = cd.get('unit', '')
     
-    current = request.POST.get('question_%s' % question.number, rmin)   
+    #try loading current from database before just setting to min
+    possibledbvalue = get_value_for_run_question(get_runid_from_request(request), question.id)
+    if not possibledbvalue == None:
+        valueaslist = ast.literal_eval(possibledbvalue)
+        current = valueaslist[0]
+    else:        
+        current = request.POST.get('question_%s' % question.number, rmin)   
 
     jsinclude = []
     if question.type == 'range':

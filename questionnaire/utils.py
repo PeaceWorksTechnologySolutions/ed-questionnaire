@@ -17,6 +17,7 @@ def split_numal(val):
         if not val[i].isdigit():
             return int(val[0:i] or '0'), val[i:]
     return int(val), ''
+
         
 
 def numal_sort(a, b):
@@ -39,6 +40,11 @@ def numal0_sort(a, b):
     numal_sort on the first items in the list
     """
     return numal_sort(a[0], b[0])
+
+def get_runid_from_request(request):
+    request_string = str(request)
+    string_chunks = request_string.split('/')
+    return string_chunks[2]
 
 if __name__ == "__main__":
     import doctest

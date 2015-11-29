@@ -1,6 +1,10 @@
 from questionnaire import *
 from django.utils.translation import ugettext as _, ungettext
 from json import dumps
+import ast
+from questionnaire.utils import get_runid_from_request
+from questionnaire.modelutils import get_value_for_run_question
+
 
 @question_proc('choice', 'choice-freeform', 'dropdown')
 def question_choice(request, question):
@@ -11,8 +15,12 @@ def question_choice(request, question):
     key = "question_%s" % question.number
     key2 = "question_%s_comment" % question.number
     val = None
+    possibledbvalue = get_value_for_run_question(get_runid_from_request(request), question.id)
     if key in request.POST:
         val = request.POST[key]
+    elif not possibledbvalue == None:
+        valueaslist = ast.literal_eval(possibledbvalue)
+        val = valueaslist[0]
     else:
         if 'default' in cd:
             val = cd['default']
@@ -50,7 +58,6 @@ add_type('choice', 'Choice [radio]')
 add_type('choice-freeform', 'Choice with a freeform option [radio]')
 add_type('dropdown', 'Dropdown choice [select]')
 
-
 @question_proc('choice-multiple', 'choice-multiple-freeform')
 def question_multiple(request, question):
     key = "question_%s" % question.number
@@ -58,10 +65,22 @@ def question_multiple(request, question):
     counter = 0
     cd = question.getcheckdict()
     defaults = cd.get('default','').split(',')
+    possibledbvalue = get_value_for_run_question(get_runid_from_request(request), question.id)
+    possiblelist = []
+    if not possibledbvalue == None:
+        possiblelist = ast.literal_eval(possibledbvalue)
+
+#    print 'possible value is ', possibledbvalue, ', possiblelist is ', possiblelist
+
     for choice in question.choices():
         counter += 1
         key = "question_%s_multiple_%d" % (question.number, choice.sortid)
-        if key in request.POST or \
+
+        #try database first and only after that fall back to post choices
+#        print 'choice multiple checking for match for choice ', choice
+        if choice.value in possiblelist:
+            choices.append( (choice, key, ' checked',) )        
+        elif key in request.POST or \
           (request.method == 'GET' and choice.value in defaults):
             choices.append( (choice, key, ' checked',) )
         else:
@@ -83,6 +102,7 @@ def question_multiple(request, question):
         "required" : cd.get("required", False) and cd.get("required") != "0",
 
     }
+
 
 @answer_proc('choice-multiple', 'choice-multiple-freeform')
 def process_multiple(question, answer):
