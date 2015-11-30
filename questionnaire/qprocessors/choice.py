@@ -51,7 +51,7 @@ add_type('choice-freeform', 'Choice with a freeform option [radio]')
 add_type('dropdown', 'Dropdown choice [select]')
 
 
-@question_proc('choice-multiple', 'choice-multiple-freeform')
+@question_proc('choice-multiple', 'choice-multiple-freeform', 'choice-multiple-values')
 def question_multiple(request, question):
     key = "question_%s" % question.number
     choices = []
@@ -79,12 +79,13 @@ def question_multiple(request, question):
     return {
         "choices": choices,
         "extras": extras,
+        "type": question.type,
         "template"  : "questionnaire/choice-multiple-freeform.html",
         "required" : cd.get("required", False) and cd.get("required") != "0",
 
     }
 
-@answer_proc('choice-multiple', 'choice-multiple-freeform')
+@answer_proc('choice-multiple', 'choice-multiple-freeform', 'choice-multiple-values')
 def process_multiple(question, answer):
     multiple = []
     multiple_freeform = []
@@ -100,11 +101,20 @@ def process_multiple(question, answer):
         requiredcount = question.choices().count()
 
     for k, v in answer.items():
-        if k.startswith('multiple'):
+        if k.startswith('multiple') and not k.endswith('value'):
             multiple.append(v)
         if k.startswith('more') and len(v.strip()) > 0:
             multiple_freeform.append(v)
-
+    
+    if len(multiple) > 1:
+    # check for associated values for choice-multiple-values
+        for k, v in answer.items():
+            if k.endswith('value'):
+                choice_text = k.rsplit("_", 2)[0]
+                if choice_text in multiple:
+                    multiple.remove(choice_text)
+                    multiple.append([choice_text, v])        
+        
     if len(multiple) + len(multiple_freeform) < requiredcount:
         raise AnswerException(ungettext(u"You must select at least %d option",
                                         u"You must select at least %d options",
@@ -115,5 +125,6 @@ def process_multiple(question, answer):
     return dumps(multiple)
 add_type('choice-multiple', 'Multiple-Choice, Multiple-Answers [checkbox]')
 add_type('choice-multiple-freeform', 'Multiple-Choice, Multiple-Answers, plus freeform [checkbox, input]')
+add_type('choice-multiple-values', 'Multiple-Choice, Multiple-Answers [checkboxes], plus value box [input] for each selected answer')
 
 
