@@ -68,9 +68,9 @@ class RunInfoHistoryAdmin(admin.ModelAdmin):
 
 class AnswerAdmin(admin.ModelAdmin):
     search_fields = ['subject__email', 'runid', 'question__number', 'answer']
-    list_display = ['runid', 'subject', 'question']
+    list_display = ['id', 'runid', 'subject', 'question']
     list_filter = ['subject', 'runid']
-    ordering = [ 'subject', 'runid', 'question', ]
+    ordering = [ 'id', 'subject', 'runid', 'question', ]
 
 adminsite.register(Questionnaire, QuestionnaireAdmin)
 adminsite.register(Question, QuestionAdmin)
