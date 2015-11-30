@@ -18,7 +18,7 @@ from questionnaire import Processors
 from questionnaire.models import *
 from questionnaire.parsers import *
 from questionnaire.emails import _send_email, send_emails
-from questionnaire.utils import numal_sort, split_numal
+from questionnaire.utils import numal_sort, split_numal, get_sortid_from_request
 from questionnaire.request_cache import request_cache
 from questionnaire.dependency_checker import dep_check
 from questionnaire import profiler
@@ -288,6 +288,7 @@ def redirect_to_qs(runinfo, request=None):
         request.session['qs'] = runinfo.questionset.sortid
         request.session['runcode'] = runinfo.random
         urlname = 'questionnaire'
+
     url = reverse(urlname, args=args)
     return HttpResponseRedirect(url)
 
@@ -344,7 +345,7 @@ def questionnaire(request, runcode=None, qs=None):
             else:
                 request.session['runcode'] = runcode
                 args = []
-
+            
             return HttpResponseRedirect(reverse("questionnaire", args=args))
 
 
@@ -629,7 +630,14 @@ def show_questionnaire(request, runinfo, errors={}):
     if use_session:
         prev_url = reverse('redirect_to_prev_questionnaire')
     else:
+        sortid = get_sortid_from_request(request)
+        
+        #testing shows that if this conditional block is run at all, it means there is a reasonable prev_url, so the following
+        #line should always be overridden.  Should an assert verify that that's always the case?
         prev_url = 'javascript:history.back();'
+        if not sortid == None and int(sortid) > 1:
+            args = [runinfo.random, int(sortid)-1]
+            prev_url = reverse('questionset', args=args)
 
     current_answers = []
     if debug_questionnaire:

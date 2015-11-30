@@ -46,6 +46,15 @@ def get_runid_from_request(request):
     string_chunks = request_string.split('/')
     return string_chunks[2]
 
+def get_sortid_from_request(request):
+    request_string = str(request)
+    string_chunks = request_string.split('/')
+    if len(string_chunks) > 3:
+        return string_chunks[3]
+
+    #not enough string chunks to get a sortid
+    return None
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
