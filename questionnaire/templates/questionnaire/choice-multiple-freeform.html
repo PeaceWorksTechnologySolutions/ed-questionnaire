@@ -10,7 +10,7 @@
                     <span>{{ choice.text }}</span>
                     {% if qdict.type == 'choice-multiple-values' %}
                     <input type="text" id="question_{{ question.number }}_{{ choice.value }}_value" name="question_{{ question.number }}_{{ choice.value }}_value" value="{{ prev_value }}" maxlength="4" 
-                    style="margin-left: 40px; width: 4em" checks="dep_check('{{ question.number }},{{ choice.value }}')" >
+                    style="margin-left: 40px; width: 4em" checks="dep_check('{{ question.number }},{{ choice.value }}')">
                     {% endif %}
                 </label>
             </li>

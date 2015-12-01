@@ -49,6 +49,10 @@ div.error {
     margin: 10px 0;
 }
 
+.type_choice-multiple-values input[type="text"]:disabled {
+    visibility: hidden;
+}
+
 /* move the back link left of the submit button */
 .back-link {
     margin-top: -66px;
