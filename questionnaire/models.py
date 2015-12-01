@@ -113,6 +113,10 @@ class QuestionSet(models.Model):
             self.__qcache = questions_with_sort_id + questions_with_out_sort_id
         return self.__qcache
 
+    def sorted_questions(self):
+        questions = self.questions()
+        return sorted(questions, key = lambda question : str(question.sort_id)+question.number)
+
     def next(self):
         qs = self.questionnaire.questionsets()
         retnext = False
@@ -297,6 +301,7 @@ class Question(models.Model):
         "by joining them with the words <tt>and</tt> or <tt>or</tt>, "
         'eg. <tt>requiredif="Q1,A or Q2,B"</tt>')
     footer = models.TextField(u"Footer", help_text="Footer rendered below the question interpreted as textile", blank=True)
+
 
     def questionnaire(self):
         return self.questionset.questionnaire
