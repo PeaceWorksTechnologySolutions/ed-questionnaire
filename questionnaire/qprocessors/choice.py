@@ -69,6 +69,13 @@ def question_multiple(request, question):
     possiblelist = []
     if not possibledbvalue == None:
         possiblelist = ast.literal_eval(possibledbvalue)
+    prev_vals = {}
+    if question.type == 'choice-multiple-values':
+        pl = []
+        for choice_value, prev_value in possiblelist:
+            pl.append(choice_value)
+            prev_vals[choice_value] = str(prev_value)
+        possiblelist = pl
 
 #    print 'possible value is ', possibledbvalue, ', possiblelist is ', possiblelist
 
@@ -79,12 +86,16 @@ def question_multiple(request, question):
         #try database first and only after that fall back to post choices
 #        print 'choice multiple checking for match for choice ', choice
         if choice.value in possiblelist:
-            choices.append( (choice, key, ' checked',) )        
+            if choice.value in prev_vals.keys():
+                prev_value = prev_vals[choice.value]
+            else:
+                prev_value = ''
+            choices.append( (choice, key, ' checked', prev_value,) )
         elif key in request.POST or \
           (request.method == 'GET' and choice.value in defaults):
-            choices.append( (choice, key, ' checked',) )
+            choices.append( (choice, key, ' checked', '',) )
         else:
-            choices.append( (choice, key, '',) )
+            choices.append( (choice, key, '', '',) )
     extracount = int(cd.get('extracount', 0))
     if not extracount and question.type == 'choice-multiple-freeform':
         extracount = 1
@@ -125,7 +136,7 @@ def process_multiple(question, answer):
         if k.startswith('more') and len(v.strip()) > 0:
             multiple_freeform.append(v)
     
-    if len(multiple) > 1:
+    if question.type == 'choice-multiple-values':
     # check for associated values for choice-multiple-values
         for k, v in answer.items():
             if k.endswith('value'):

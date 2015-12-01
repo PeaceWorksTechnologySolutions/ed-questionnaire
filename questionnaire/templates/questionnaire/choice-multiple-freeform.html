@@ -3,13 +3,13 @@
 <div class="clearfix">
     <div class="input">
         <ul class="inputs-list">
-        {% for choice, key, checked in qdict.choices %}
+        {% for choice, key, checked, prev_value in qdict.choices %}
             <li>
                 <label>
                     <input onClick="valchanged('{{ question.number }}_{{ choice.value }}', this.checked);" type="checkbox" id="{{ key }}" name="{{ key }}" value="{{ choice.value }}" {{ checked }}>
                     <span>{{ choice.text }}</span>
                     {% if qdict.type == 'choice-multiple-values' %}
-                    <input type="text" id="question_{{ question.number }}_{{ choice.value }}_value" name="question_{{ question.number }}_{{ choice.value }}_value" maxlength="4" style="margin-left: 40px; width: 4em">
+                    <input type="text" id="question_{{ question.number }}_{{ choice.value }}_value" name="question_{{ question.number }}_{{ choice.value }}_value" value="{{ prev_value }}" maxlength="4" style="margin-left: 40px; width: 4em">
                     {% endif %}
                 </label>
             </li>
