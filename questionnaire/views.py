@@ -555,6 +555,9 @@ def show_questionnaire(request, runinfo, errors={}):
 
     substitute_answer(qvalues, runinfo.questionset)
 
+    #we make it clear to the user that we're going to sort by sort id then number, so why wasn't it doing that?
+    questions = sorted(questions, key=lambda question: str(question.sort_id)+question.number)
+
     for question in questions:
         # if we got here the questionset will at least contain one question
         # which passes, so this is all we need to check for
