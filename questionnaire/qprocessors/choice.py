@@ -62,7 +62,9 @@ add_type('dropdown', 'Dropdown choice [select]')
 def question_multiple(request, question):
     key = "question_%s" % question.number
     choices = []
+    jstriggers = []
     counter = 0
+    qvalues = []
     cd = question.getcheckdict()
     defaults = cd.get('default','').split(',')
     possibledbvalue = get_value_for_run_question(get_runid_from_request(request), question.id)
@@ -82,10 +84,16 @@ def question_multiple(request, question):
     for choice in question.choices():
         counter += 1
         key = "question_%s_multiple_%d" % (question.number, choice.sortid)
-
+        if question.type == "choice-multiple-values":
+            jstriggers.append("question_%s_%s_value" % (question.number, choice.value))
+            # so that the number box will be activated when item is checked
+            
         #try database first and only after that fall back to post choices
 #        print 'choice multiple checking for match for choice ', choice
         if choice.value in possiblelist:
+            qvalues.append("%s_%s" % (question.number, choice.value))
+            # so that this choice being checked will trigger anything that depends on it -
+            # for choice-multiple-values right now
             if choice.value in prev_vals.keys():
                 prev_value = prev_vals[choice.value]
             else:
@@ -93,6 +101,7 @@ def question_multiple(request, question):
             choices.append( (choice, key, ' checked', prev_value,) )
         elif key in request.POST or \
           (request.method == 'GET' and choice.value in defaults):
+            qvalues.append("%s_%s" % (question.number, choice.value))
             choices.append( (choice, key, ' checked', '',) )
         else:
             choices.append( (choice, key, '', '',) )
@@ -112,7 +121,8 @@ def question_multiple(request, question):
         "type": question.type,
         "template"  : "questionnaire/choice-multiple-freeform.html",
         "required" : cd.get("required", False) and cd.get("required") != "0",
-
+        "jstriggers": jstriggers,
+        "qvalues": qvalues
     }
 
 @answer_proc('choice-multiple', 'choice-multiple-freeform', 'choice-multiple-values')

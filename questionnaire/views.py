@@ -598,6 +598,10 @@ def show_questionnaire(request, runinfo, errors={}):
                 jstriggers.extend(qdict['jstriggers'])
             if 'qvalue' in qdict and not question.number in cookiedict:
                 qvalues[question.number] = qdict['qvalue']
+            if 'qvalues' in qdict:
+            # for multiple selection
+                for choice in qdict['qvalues']:
+                    qvalues[choice] = 'true'
 
         qlist.append((question, qdict))
 
