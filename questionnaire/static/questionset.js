@@ -50,6 +50,9 @@ function statusChanged(obj, res) {
         obj.style.display = !res ? 'none' : 'block';
         return;
     }
+    if(obj.tagName == 'SPAN') {
+        obj.style.visibility = !res ? 'hidden': 'visible';
+    }
     //obj.style.backgroundColor = !res ? "#eee" : "#fff";
     obj.disabled = !res;
 }

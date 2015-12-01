@@ -85,7 +85,7 @@ def question_multiple(request, question):
         counter += 1
         key = "question_%s_multiple_%d" % (question.number, choice.sortid)
         if question.type == "choice-multiple-values":
-            jstriggers.append("question_%s_%s_value" % (question.number, choice.value))
+            jstriggers.append("q%s_%s_box" % (question.number, choice.value))
             # so that the number box will be activated when item is checked
             
         #try database first and only after that fall back to post choices
