@@ -91,12 +91,12 @@
                     </div>
                 {% endif %}
             </div> <!-- /question container -->
-            {% if question.footer %}
-                <div class="question-footer">
+                {% if question.footer %}
+                <div class="question-footer" id="qc_{{ question.number }}_footer" {{qdict.footerchecks|safe}}>
                     {{ question.footer }}
                     <div class="clearfix"></div>
                 </div>
-            {% endif %}
+                {% endif %}
         {% endwith %}
         {% endfor %}
 

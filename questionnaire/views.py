@@ -587,6 +587,13 @@ def show_questionnaire(request, runinfo, errors={}):
             parser = BooleanParser(dep_check)
             qdict['checkstring'] = ' checks="%s"' % parser.toString(depon)
             jstriggers.append('qc_%s' % question.number)
+
+        footerdep = cd.get('footerif', None)
+        if footerdep:
+            parser = BooleanParser(dep_check)
+            qdict['footerchecks'] = ' checks="%s"' % parser.toString(footerdep)
+            jstriggers.append('qc_%s_footer' % question.number)
+
         if 'default' in cd and not question.number in cookiedict:
             qvalues[question.number] = cd['default']
         if Type in QuestionProcessors:
