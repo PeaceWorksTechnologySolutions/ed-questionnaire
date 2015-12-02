@@ -624,7 +624,9 @@ def show_questionnaire(request, runinfo, errors={}):
         for k, v in request.POST.items():
             if k.startswith("question_"):
                 s = k.split("_")
-                if len(s) == 4:
+                if s[-1] == "value":    # multiple checkboxes with value boxes
+                    qvalues["_".join(s[1:])] = v
+                elif len(s) == 4:
                     qvalues[s[1] + '_' + v] = '1'  # evaluates true in JS
                 elif len(s) == 3 and s[2] == 'comment':
                     qvalues[s[1] + '_' + s[2]] = v

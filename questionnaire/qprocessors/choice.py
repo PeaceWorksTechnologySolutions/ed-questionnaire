@@ -90,21 +90,27 @@ def question_multiple(request, question):
             
         #try database first and only after that fall back to post choices
 #        print 'choice multiple checking for match for choice ', choice
-        if choice.value in possiblelist:
-            qvalues.append("%s_%s" % (question.number, choice.value))
+        checked = ' checked'
+        prev_value = ''
+        qvalue = "%s_%s" % (question.number, choice.value)
+        if key in request.POST or \
+          (request.method == 'GET' and choice.value in defaults):
+            qvalues.append(qvalue)
+            value_key = "question_%s_%s_value" % (question.number, choice.value)
+            if value_key in request.POST:
+                prev_value = request.POST[value_key]
+        elif choice.value in possiblelist:
+            qvalues.append(qvalue)
             # so that this choice being checked will trigger anything that depends on it -
             # for choice-multiple-values right now
             if choice.value in prev_vals.keys():
                 prev_value = prev_vals[choice.value]
-            else:
-                prev_value = ''
-            choices.append( (choice, key, ' checked', prev_value,) )
-        elif key in request.POST or \
-          (request.method == 'GET' and choice.value in defaults):
-            qvalues.append("%s_%s" % (question.number, choice.value))
-            choices.append( (choice, key, ' checked', '',) )
         else:
-            choices.append( (choice, key, '', '',) )
+            checked = ''
+        # bug: you can have one item checked from database and another from POST data
+
+        choices.append( (choice, key, checked, prev_value,) )
+
     extracount = int(cd.get('extracount', 0))
     if not extracount and question.type == 'choice-multiple-freeform':
         extracount = 1
@@ -115,6 +121,7 @@ def question_multiple(request, question):
             extras.append( (key, request.POST[key],) )
         else:
             extras.append( (key, '',) )
+        # right now does not retrieve extra fields from database
     return {
         "choices": choices,
         "extras": extras,
@@ -148,12 +155,35 @@ def process_multiple(question, answer):
     
     if question.type == 'choice-multiple-values':
     # check for associated values for choice-multiple-values
+        total = 0
+        floats = False
+        notnumbers = False
         for k, v in answer.items():
             if k.endswith('value'):
                 choice_text = k.rsplit("_", 2)[0]
                 if choice_text in multiple:
+                    val = v
                     multiple.remove(choice_text)
-                    multiple.append([choice_text, v])        
+                    try:
+                        val = int(v)
+                        total += val
+                    except ValueError:  # not an int
+                        try:
+                            val = float(v)
+                            floats = True
+                        except ValueError:  # not a float or int
+                            notnumbers = True
+                    multiple.append([choice_text, val])
+
+        if floats:
+            raise AnswerException(ungettext(u"Please enter a whole number - no decimal places", u"Please enter whole numbers - no decimal places", len(multiple)))
+
+        if notnumbers:
+            raise AnswerException(ungettext(u"Value must be a number (with no decimal places)", u"All values must be numbers (with no decimal places)", len(multiple)))
+
+        if total != 100:
+            raise AnswerException(ungettext(u"Did you mean 100% for one choice? Please enter 100 or add other choices.", u"Values must add up to 100.", len(multiple)))
+
         
     if len(multiple) + len(multiple_freeform) < requiredcount:
         raise AnswerException(ungettext(u"You must select at least %d option",
@@ -162,6 +192,7 @@ def process_multiple(question, answer):
     multiple.sort()
     if multiple_freeform:
         multiple.append(multiple_freeform)
+
     return dumps(multiple)
 add_type('choice-multiple', 'Multiple-Choice, Multiple-Answers [checkbox]')
 add_type('choice-multiple-freeform', 'Multiple-Choice, Multiple-Answers, plus freeform [checkbox, input]')
