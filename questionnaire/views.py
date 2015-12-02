@@ -27,6 +27,7 @@ import logging
 import random
 from hashlib import md5
 import re
+from uuid import uuid4
 
 
 try:
@@ -987,7 +988,8 @@ def generate_run(request, questionnaire_id, subject_id=None):
             su = Subject(givenname='Anonymous', surname='User')
             su.save()
 
-    str_to_hash = "".join(map(lambda i: chr(random.randint(0, 255)), range(16)))
+#    str_to_hash = "".join(map(lambda i: chr(random.randint(0, 255)), range(16)))
+    str_to_hash = str(uuid4())
     str_to_hash += settings.SECRET_KEY
     key = md5(str_to_hash).hexdigest()
 
