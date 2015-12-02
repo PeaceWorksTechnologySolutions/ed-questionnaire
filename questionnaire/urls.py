@@ -21,6 +21,9 @@ if not use_session:
             questionnaire, name='questionset'),
         url(r'^(?P<runcode>[^/]+)/$',
             questionnaire, name='questionnaire'),
+        url(r'^(?P<runcode>[^/]+)/(?P<qs>[-]{0,1}\d+)/prev/$',
+            redirect_to_prev_questionnaire,
+            name='redirect_to_prev_questionnaire'),
     )
 else:
     urlpatterns += patterns(

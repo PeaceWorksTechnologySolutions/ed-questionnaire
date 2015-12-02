@@ -293,23 +293,38 @@ def redirect_to_qs(runinfo, request=None):
     return HttpResponseRedirect(url)
 
 
-def redirect_to_prev_questionnaire(request):
+def redirect_to_prev_questionnaire(request, runcode=None, qs=None):
     """
-    Used only when ```QUESTIONNAIRE_USE_SESSION``` is True.
     Takes the questionnaire set in the session and redirects to the
-    previous questionnaire if any.
+    previous questionnaire if any. Used for linking to previous pages
+    both when using sessions or not. (Has not been tested with sessions.)
     """
-    runcode = request.session.get('runcode', None)
+    if use_session:
+        runcode = request.session.get('runcode', None)
+
     if runcode is not None:
         runinfo = get_runinfo(runcode)
-        prev_qs = runinfo.questionset.prev()
+        if qs:
+            qs = get_object_or_404(QuestionSet, sortid=qs, questionnaire=runinfo.questionset.questionnaire)
+            prev_qs = qs.prev()
+        else:
+            prev_qs = runinfo.questionset.prev()
+
+        while prev_qs and not questionset_satisfies_checks(prev_qs, runinfo):
+            prev_qs = prev_qs.prev()
+
         if runinfo and prev_qs:
-            request.session['runcode'] = runinfo.random
-            request.session['qs'] = prev_qs.sortid
-            return HttpResponseRedirect(reverse('questionnaire'))
+            if use_session:
+                request.session['runcode'] = runinfo.random
+                request.session['qs'] = prev_qs.sortid
+                return HttpResponseRedirect(reverse('questionnaire'))
+
+            else:
+                runinfo.questionset = prev_qs
+                runinfo.save()
+                return HttpResponseRedirect(reverse('questionnaire', args=[runinfo.random]))
 
     return HttpResponseRedirect('/')
-
 
 @commit_on_success
 def questionnaire(request, runcode=None, qs=None):
@@ -643,18 +658,12 @@ def show_questionnaire(request, runinfo, errors={}):
                 else:
                     qvalues[s[1]] = v
 
+
     if use_session:
         prev_url = reverse('redirect_to_prev_questionnaire')
     else:
-        sortid = get_sortid_from_request(request)
+        prev_url = reverse('redirect_to_prev_questionnaire', args=[runinfo.random, runinfo.questionset.sortid])
         
-        #testing shows that if this conditional block is run at all, it means there is a reasonable prev_url, so the following
-        #line should always be overridden.  Should an assert verify that that's always the case?
-        prev_url = 'javascript:history.back();'
-        if not sortid == None and int(sortid) > 1:
-            args = [runinfo.random, int(sortid)-1]
-            prev_url = reverse('questionset', args=args)
-
     current_answers = []
     if debug_questionnaire:
         current_answers = Answer.objects.filter(subject=runinfo.subject, runid=runinfo.runid).order_by('id')
