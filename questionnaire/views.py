@@ -555,6 +555,9 @@ def show_questionnaire(request, runinfo, errors={}):
 
     substitute_answer(qvalues, runinfo.questionset)
 
+    #we make it clear to the user that we're going to sort by sort id then number, so why wasn't it doing that?
+    questions = sorted(questions, key=lambda question: str(question.sort_id)+question.number)
+
     for question in questions:
         # if we got here the questionset will at least contain one question
         # which passes, so this is all we need to check for
@@ -584,6 +587,13 @@ def show_questionnaire(request, runinfo, errors={}):
             parser = BooleanParser(dep_check)
             qdict['checkstring'] = ' checks="%s"' % parser.toString(depon)
             jstriggers.append('qc_%s' % question.number)
+
+        footerdep = cd.get('footerif', None)
+        if footerdep:
+            parser = BooleanParser(dep_check)
+            qdict['footerchecks'] = ' checks="%s"' % parser.toString(footerdep)
+            jstriggers.append('qc_%s_footer' % question.number)
+
         if 'default' in cd and not question.number in cookiedict:
             qvalues[question.number] = cd['default']
         if Type in QuestionProcessors:

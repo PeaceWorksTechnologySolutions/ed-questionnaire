@@ -77,10 +77,6 @@ def question_open(request, question):
             valueaslist = ast.literal_eval(possiblevalue)
             if len(valueaslist) > 0:
                 value = valueaslist[0]
-#            print 'open or open-textfield question proc, value found: ', possiblevalue, ', type ', type(possiblevalue), ', value used ', value
-#        else:
-#            print 'open or open-textfield question proc, no value found'
-#        print 'open or open-textfield question proc, runid , question_id ', get_runid_from_request(request), ',', question.id
     return {
         'required': question.getcheckdict().get('required', False),
         'value': value,
@@ -108,6 +104,12 @@ def process_simple(question, ansdict):
         #the key here is to note that requiredif has already been evaluated or we wouldn't have reached this point, so we don't have to recheck
         if not ans.strip() and (checkdict.get('required', False) or checkdict.get('requiredif', False)):
             raise AnswerException(_(u'Field cannot be blank'))
+        maxwords = checkdict.get('maxwords', False)
+        if maxwords:
+            maxwords = int(maxwords)
+            answords = len(ans.split())
+            if answords > maxwords:
+                raise AnswerException(_(u'Answer is ' + str(answords) + ' words.  Please shorten answer to ' + str(maxwords) + ' words or less'))
     if ansdict.has_key('comment') and len(ansdict['comment']) > 0:
         return dumps([ans, [ansdict['comment']]])
     if ans:
