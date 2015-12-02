@@ -181,7 +181,7 @@ def process_multiple(question, answer):
         if notnumbers:
             raise AnswerException(ungettext(u"Value must be a number (with no decimal places)", u"All values must be numbers (with no decimal places)", len(multiple)))
 
-        if total != 100:
+        if len(multiple) > 0 and total != 100:
             raise AnswerException(ungettext(u"Did you mean 100% for one choice? Please enter 100 or add other choices.", u"Values must add up to 100.", len(multiple)))
 
         
