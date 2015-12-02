@@ -42,13 +42,21 @@
 
     <h2 class="questionset-title">
     {% if questionset.heading %}
+        {% if questionset.parse_html %}
+        {{ questionset.heading|safe }}
+        {% else %}
         {{ questionset.heading }}
+        {% endif %}
     {% endif %}
     </h2>
 
     <div class="questionset-text">
     {% if questionset.text %}
+        {% if questionset.parse_html %}
+        {{ questionset.text|safe }}
+        {% else %}
         {{ questionset.text }}
+        {% endif %}
     {% endif %}    
     </div>
 
@@ -80,8 +88,12 @@
                     {% include qdict.template %}
                 {% else %}
                     <div class="question-text {% if qdict.required %}required{% endif %}">
-                        <span class="qnumber">{{ question.display_number|safe }}.</span>
+                        <span class="qnumber">{% if not question.parse_html %}{{ question.display_number|safe }}.{% endif %}</span>
+                        {% if question.parse_html %}
+                        {{ question.text|safe }}
+                        {% else %}
                         {{ question.text }}
+                        {% endif %}
                     </div>
                     <div class="answer">
                         {% if error %}
@@ -93,7 +105,11 @@
             </div> <!-- /question container -->
                 {% if question.footer %}
                 <div class="question-footer" id="qc_{{ question.number }}_footer" {{qdict.footerchecks|safe}}>
-                    {{ question.footer }}
+                    {% if question.parse_html %}
+                        {{ question.footer|safe }}
+                    {% else %}
+                        {{ question.footer }}
+                    {% endif %}
                     <div class="clearfix"></div>
                 </div>
                 {% endif %}

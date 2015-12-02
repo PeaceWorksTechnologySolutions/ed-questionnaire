@@ -101,6 +101,8 @@ class QuestionSet(models.Model):
         help_text = """Current options are 'femaleonly' or 'maleonly' and shownif="QuestionNumber,Answer" which takes the same format as <tt>requiredif</tt> for questions.""")
     text = models.TextField(u'Text', help_text="This is interpreted as Textile: <a href='http://en.wikipedia.org/wiki/Textile_%28markup_language%29' target='_blank'>http://en.wikipedia.org/wiki/Textile_(markup_language)</a>")
 
+    parse_html = models.BooleanField("parse questionset heading and text as html?", null=False, default=False)
+
     def questions(self):
         if not hasattr(self, "__qcache"):
             def numeric_number(val):
@@ -302,6 +304,7 @@ class Question(models.Model):
         'eg. <tt>requiredif="Q1,A or Q2,B"</tt>')
     footer = models.TextField(u"Footer", help_text="Footer rendered below the question interpreted as textile", blank=True)
 
+    parse_html = models.BooleanField("parse question text and footer as html?", null=False, default=False)
 
     def questionnaire(self):
         return self.questionset.questionnaire
