@@ -554,8 +554,9 @@ def recursivly_build_partially_evaluated_javascript_expression_for_shownif_check
     else:
         assert( isinstance(treenode, Checker) )
         # ouch, we're assuming the correct syntax is always found
-        question_looksee_id = int(treenode.expr.split(",", 1)[0])
-        if Question.objects.get(id=question_looksee_id).questionset != question.questionset:
+        question_looksee_number = treenode.expr.split(",", 1)[0]
+        if Question.objects.get(number=question_looksee_number).questionset \
+           != question.questionset:
             return "true" if dep_check(treenode.expr, runinfo, {}) else "false"
         else:
             return str(treenode)
