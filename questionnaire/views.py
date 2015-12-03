@@ -597,6 +597,13 @@ def show_questionnaire(request, runinfo, errors={}):
 
         # add javascript dependency checks
         cd = question.getcheckdict()
+        
+        # Note: dep_check() is showing up on pages where questions rely on previous pages' questions -
+        # this causes disappearance of questions, since there are no qvalues for questions on previous
+        # pages. BUT depon will be false if the question is a SAMEAS of another question with no off-page
+        # checks. This will make no bad dep_check()s appear for these SAMEAS questions, circumventing the 
+        # problem. Eventually need to fix either getcheckdict() (to screen out questions on previous pages) 
+        # or prevent JavaScript from hiding questions when check_dep() cannot find a key in qvalues.
         depon = cd.get('requiredif', None) or cd.get('dependent', None) or cd.get('shownif', None)
         if depon:
             # extra args to BooleanParser are not required for toString

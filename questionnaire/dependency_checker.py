@@ -7,8 +7,9 @@ def explode_answer_into_list(answers):
 
     for answer in answers:
         if type(answer) == type(list()):
-            for list_answer in answer:
-                answer_list.append(list_answer)
+            string_list = filter(lambda v: not isinstance(v, int), answer)
+            # remove all number values from list - this means choice-multiple-values's values
+            answer_list.extend(string_list)
         else:
             answer_list.append(answer)
 
