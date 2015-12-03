@@ -647,7 +647,7 @@ def show_questionnaire(request, runinfo, errors={}):
             else:
                 # extra args to BooleanParser are not required for toString
                 parser = BooleanParser(dep_check)
-                qdict['checkstring'] = ' gar="%s" checks="%s"' % (str(cd), parser.toString(depon))
+                qdict['checkstring'] = ' checks="%s"' % (str(cd), parser.toString(depon))
             jstriggers.append('qc_%s' % question.number)
 
         footerdep = cd.get('footerif', None)
