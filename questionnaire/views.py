@@ -17,6 +17,7 @@ from questionnaire import AnswerException
 from questionnaire import Processors
 from questionnaire.models import *
 from questionnaire.parsers import *
+from questionnaire.parsers import BoolNot, BoolAnd, BoolOr, Checker
 from questionnaire.emails import _send_email, send_emails
 from questionnaire.utils import numal_sort, split_numal, get_sortid_from_request
 from questionnaire.request_cache import request_cache
@@ -539,6 +540,31 @@ def finish_questionnaire(request, runinfo, questionnaire):
     return r2r("questionnaire/complete.$LANG.html", request)
 
 
+def recursivly_build_partially_evaluated_javascript_expression_for_shownif_check(treenode, runinfo, question):
+    if isinstance(treenode, BoolNot):
+        return "!( %s )" % recursivly_build_partially_evaluated_javascript_expression_for_shownif_check(treenode.arg, runinfo, question)
+    elif isinstance(treenode, BoolAnd):
+        return " && ".join( 
+            "( %s )" % recursivly_build_partially_evaluated_javascript_expression_for_shownif_check(arg, runinfo, question)
+            for arg in treenode.args )
+    elif isinstance(treenode, BoolOr):
+        return " || ".join( 
+            "( %s )" % recursivly_build_partially_evaluated_javascript_expression_for_shownif_check(arg, runinfo, question)
+            for arg in treenode.args )
+    else:
+        assert( isinstance(treenode, Checker) )
+        # ouch, we're assuming the correct syntax is always found
+        question_looksee_id = int(treenode.expr.split(",", 1)[0])
+        if Question.objects.get(id=question_looksee_id).questionset != question.questionset:
+            return "true" if dep_check(treenode.expr, runinfo, {}) else "false"
+        else:
+            return str(treenode)
+
+def make_partially_evaluated_javascript_expression_for_shownif_check(checkexpression, runinfo, question):
+    depparser = BooleanParser(dep_check, runinfo, {})
+    parsed_bool_expression_results = depparser.boolExpr.parseString(checkexpression)[0]
+    return recursivly_build_partially_evaluated_javascript_expression_for_shownif_check(parsed_bool_expression_results, runinfo, question)
+    
 def show_questionnaire(request, runinfo, errors={}):
     """
     Return the QuestionSet template
@@ -606,9 +632,22 @@ def show_questionnaire(request, runinfo, errors={}):
         # or prevent JavaScript from hiding questions when check_dep() cannot find a key in qvalues.
         depon = cd.get('requiredif', None) or cd.get('dependent', None) or cd.get('shownif', None)
         if depon:
-            # extra args to BooleanParser are not required for toString
-            parser = BooleanParser(dep_check)
-            qdict['checkstring'] = ' checks="%s"' % parser.toString(depon)
+            willberequiredif = bool(cd.get("requiredif", None) )
+            willbedependent = bool(cd.get("dependent", None) )
+            willbe_shownif = (not willberequiredif) and (not willbedependent) and bool(cd.get("shownif", None))
+        
+            # jamie and mark funkyness to be only done if depon is shownif, some similar thought is due to requiredif
+            # for shownon, we have to deal with the fact that only the answers from this page are available to the JS
+            # so we do a partial parse to form the checks="" attribute 
+            if willbe_shownif:
+                qdict['checkstring'] = ' checks="%s"' % make_partially_evaluated_javascript_expression_for_shownif_check(
+                    depon, runinfo, question
+                )
+                    
+            else:
+                # extra args to BooleanParser are not required for toString
+                parser = BooleanParser(dep_check)
+                qdict['checkstring'] = ' gar="%s" checks="%s"' % (str(cd), parser.toString(depon))
             jstriggers.append('qc_%s' % question.number)
 
         footerdep = cd.get('footerif', None)
