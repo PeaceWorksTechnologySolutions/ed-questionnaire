@@ -128,3 +128,7 @@ input.sending {
          -o-transition: 0.3s linear all !important;
             transition: 0.3s linear all !important;   
 }
+
+.hoverable {
+    color: #79E2E8;
+}
