@@ -119,7 +119,7 @@ class QuestionSet(models.Model):
 
     def sorted_questions(self):
         questions = self.questions()
-        return sorted(questions, key = lambda question : str(question.sort_id)+question.number)
+        return sorted(questions, key = lambda question : (question.sort_id, question.number))
 
     def next(self):
         qs = self.questionnaire.questionsets()
