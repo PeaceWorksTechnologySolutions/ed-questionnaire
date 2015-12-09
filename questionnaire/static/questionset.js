@@ -78,6 +78,24 @@ function addtrigger(elemid) {
     qtriggers[qtriggers.length] = elem;
 }
 
+function alignValueBoxes(question) {
+    var question = document.getElementById("qc_" + question);
+    var choice_boxes = question.getElementsByClassName("choice-multiple-values-text");
+    var max_width = 0;
+    for (i = 0 ; i < choice_boxes.length ; i++) {
+        box_width = choice_boxes[i].offsetWidth;
+        if (box_width > max_width)
+            max_width = box_width;
+    }
+    // add padding to right of narrower boxes
+    for (i = 0 ; i < choice_boxes.length ; i++) {
+        box_width = choice_boxes[i].offsetWidth;
+        padding = max_width - box_width;
+        if (padding > 0)
+            choice_boxes[i].style.paddingRight = padding + "px";
+    }
+}
+
 /* 
  - disable the submit button once it's been clicked 
  - do it for a total of 5 seconds by which time the page should've been sent
