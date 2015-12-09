@@ -110,7 +110,7 @@ html, body {
 
 span.choice-multiple-values-text {
     display: inline-block;
-    width: 35%;
+    max-width: 40%;
 }
 
 input.sending {
