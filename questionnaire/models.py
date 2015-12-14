@@ -92,6 +92,9 @@ class Questionnaire(models.Model):
         )
 
 
+class DBStylesheet(models.Model):
+    content = models.TextField()
+
 class QuestionSet(models.Model):
     __metaclass__ = TransMeta
 

@@ -5,7 +5,8 @@
 {% block headextra %}
     <script type="text/javascript" src="{% static 'jquery-1.7.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'questionset.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'progressbar.css' %}"/>
+<!--    <link rel="stylesheet" href="{% static 'progressbar.css' %}"/>-->
+    {{ questionset.questionnaire.name|add:":"|questionset.heading|getAssociatedStylesheets }}
 
     {% for x in jsinclude %}
         <script type="text/javascript" src="{{ x }}"></script>
@@ -32,6 +33,7 @@
 {% block content %}
 
     {% if progress %}
+    {% questionset.questionnaire.name|add:"Progress"|getAssociatedStylesheets }}
     <div id="progress_bar" class="ui-progress-bar ui-container">
       <div class="ui-progress" style="width: {{progress}}%;">
         <span class="ui-label"><b class="value">{{progress}}%</b></span>
@@ -67,6 +69,7 @@
         <input type="hidden" name="questionset_id" value="{{ questionset.id }}">
 
         {% for question, qdict in qlist %}
+        {{question.id|getAssociatedStylesheets}}
         {% with errors|dictget:question.number as error %}
 
             <div class="question type_{{ qdict.qtype }} {% if error %} error prepend-top{% endif %}{{ qdict.qnum_class }}{{ qdict.qalpha_class }}" id="qc_{{ question.number }}" {{qdict.checkstring|safe}} style="{{qdict.css_style}}"> 
