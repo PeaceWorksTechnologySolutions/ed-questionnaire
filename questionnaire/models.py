@@ -93,6 +93,10 @@ class Questionnaire(models.Model):
 
 
 class DBStylesheet(models.Model):
+    #Questionnaire max length of name is 128; Questionset max length of heading 
+    #is 64, and Question associative information is id which is less than 128 
+    #in length
+    inclusion_tag = models.CharField(max_length=128) 
     content = models.TextField()
 
 class QuestionSet(models.Model):
