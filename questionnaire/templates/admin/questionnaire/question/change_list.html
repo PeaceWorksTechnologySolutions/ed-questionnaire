@@ -27,7 +27,7 @@ function togglehide(id) {
 {%   for questionset in questionnaire.questionsets %}
 <H4>QuestionSet: <a href="/admin/questionnaire/questionset/{{ questionset.id }}/"><font color="#111">{{ questionset.heading }} ({{ questionset.sortid }})</font></a></H4>
 {%     for q in questionset.sorted_questions %}
-<a href="{{ q.id }}/">{{ q.number }}. {{ q.text }}</a> [{{ q.type }}]<br />
+<a href="{{ q.id }}/">{{ q.number }}. {{ q.text }}</a> [{{ q.type }}] (id={{ q.id }})<br />
 {%     endfor %}
 &rarr; <a href="add/?questionset={{ questionset.id }}">Add Question to <tt>{{ questionset.heading }}</tt></a>
 {%   endfor %}
