@@ -6,8 +6,10 @@
         {% for choice, key, checked, prev_value in qdict.choices %}
             <li>
 <!--                <label> -->
+                    <span class="{{ qdict.type }}-text">
                     <input onClick="valchanged('{{ question.number }}_{{ choice.value }}', this.checked);" type="checkbox" id="{{ key }}" name="{{ key }}" value="{{ choice.value }}" {{ checked }}>
-                    <span class="{{ qdict.type }}-text">{{ choice.text }}</span>
+                    {{ choice.text }}
+                    </span>
                     <!-- limits text width if we're in a choice-multiple-values control - allows proper alignment of value boxes -->
                     {% if qdict.type == 'choice-multiple-values' %}
                     <span checks="dep_check('{{ question.number }},{{ choice.value }}')" id="q{{ question.number }}_{{ choice.value }}_box">
