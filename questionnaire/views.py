@@ -730,6 +730,7 @@ def show_questionnaire(request, runinfo, errors={}):
             async_url=reverse('progress', args=[runinfo.random]),
             prev_url=prev_url,
             current_answers=current_answers,
+            questionsetstylesheet=runinfo.questionset.questionnaire.name+":"+runinfo.questionset.heading,
     )
     r['Cache-Control'] = 'no-cache'
     r['Expires'] = "Thu, 24 Jan 1980 00:00:00 GMT"

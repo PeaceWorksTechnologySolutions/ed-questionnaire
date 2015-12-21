@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load questionnaire i18n %}
 {% load static %}
-
+{% load dynamicStyleTags %}
 {% block headextra %}
     <script type="text/javascript" src="{% static 'jquery-1.7.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'questionset.js' %}"></script>
 <!--    <link rel="stylesheet" href="{% static 'progressbar.css' %}"/>-->
-    {{ questionset.questionnaire.name|add:":"|questionset.heading|getAssociatedStylesheets }}
+    {{ questionsetstylesheet|getAssociatedStylesheets }}
 
     {% for x in jsinclude %}
         <script type="text/javascript" src="{{ x }}"></script>

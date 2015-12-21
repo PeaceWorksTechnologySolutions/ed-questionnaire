@@ -99,6 +99,10 @@ class DBStylesheet(models.Model):
     inclusion_tag = models.CharField(max_length=128) 
     content = models.TextField()
 
+    def __unicode__(self):
+        return self.inclusion_tag
+
+
 class QuestionSet(models.Model):
     __metaclass__ = TransMeta
 
