@@ -63,6 +63,8 @@ class Subject(models.Model):
     def pending(self):
         return RunInfo.objects.filter(subject=self).order_by('runid')
 
+class GlobalStyles(models.Model):
+    content = models.TextField()
 
 class Questionnaire(models.Model):
     name = models.CharField(max_length=128)

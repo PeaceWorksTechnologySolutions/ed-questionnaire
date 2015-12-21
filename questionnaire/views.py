@@ -716,6 +716,8 @@ def show_questionnaire(request, runinfo, errors={}):
     if debug_questionnaire:
         current_answers = Answer.objects.filter(subject=runinfo.subject, runid=runinfo.runid).order_by('id')
 
+    global_styles = GlobalStyles.objects.get(id=1)
+
     r = r2r("questionnaire/questionset.html", request,
             questionset=runinfo.questionset,
             runinfo=runinfo,
@@ -730,6 +732,7 @@ def show_questionnaire(request, runinfo, errors={}):
             async_url=reverse('progress', args=[runinfo.random]),
             prev_url=prev_url,
             current_answers=current_answers,
+            global_styles=global_styles,
     )
     r['Cache-Control'] = 'no-cache'
     r['Expires'] = "Thu, 24 Jan 1980 00:00:00 GMT"
