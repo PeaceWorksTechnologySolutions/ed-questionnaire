@@ -39,6 +39,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='subject',
             name='language',
-            field=models.CharField(default=b'en-us', max_length=2, verbose_name='Language', choices=[(b'en', b'English')]),
+            field=models.CharField(default=b'en', max_length=2, verbose_name='Language', choices=[(b'en', b'English')]),
         ),
     ]
