@@ -1,12 +1,15 @@
 #!/usr/bin/python
 
 from django import template
-from models import QuestionSet
+from ..models import DBStylesheet
+
 
 register = template.Library()
 
 
 @register.filter(name="getAssociatedStylesheets")
 def getAssociatedStylesheets(inclusionTag):
-
-    return "smiley"
+    if DBStylesheet.objects.filter(inclusion_tag=inclusionTag).exists():
+        return DBStylesheet.objects.get(inclusion_tag=inclusionTag).content
+    else:
+        return None
