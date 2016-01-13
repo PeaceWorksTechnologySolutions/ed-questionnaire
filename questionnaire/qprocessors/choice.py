@@ -137,6 +137,7 @@ def process_multiple(question, answer):
     multiple = []
     multiple_freeform = []
 
+    #this is the same thing as a minimum count so use it for that..
     requiredcount = 0
     required = question.getcheckdict().get('required', 0)
     if required:
@@ -146,6 +147,18 @@ def process_multiple(question, answer):
             requiredcount = 1
     if requiredcount and requiredcount > question.choices().count():
         requiredcount = question.choices().count()
+
+    #added support for a max number of choices
+    maxcount = 9999
+    maxdict = question.getcheckdict().get('max', 0)
+    if maxdict:
+        try:
+            maxcount = int(maxdict)
+        except ValueError:
+            pass #leave maxcount at 9999
+
+    if maxcount and maxcount > question.choices().count():
+        maxcount = question.choices().count()
 
     for k, v in answer.items():
         if k.startswith('multiple') and not k.endswith('value'):
@@ -189,6 +202,11 @@ def process_multiple(question, answer):
         raise AnswerException(ungettext(u"You must select at least %d option",
                                         u"You must select at least %d options",
                                         requiredcount) % requiredcount)
+
+    if len(multiple) + len(multiple_freeform) > maxcount:
+        raise AnswerException(ungettext(u"You must select at most %d options",
+                                        u"You must select at most %d options",
+                                        maxcount) % maxcount)
     multiple.sort()
     if multiple_freeform:
         multiple.append(multiple_freeform)
