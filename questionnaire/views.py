@@ -1062,3 +1062,6 @@ def generate_run(request, questionnaire_id, subject_id=None):
 
     questionnaire_start.send(sender=None, runinfo=run, questionnaire=qu)
     return HttpResponseRedirect(reverse('questionnaire', kwargs=kwargs))
+
+def generate_error(request):
+    return 400/0
