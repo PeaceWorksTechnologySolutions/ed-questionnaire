@@ -16,7 +16,9 @@ def question_range_or_number(request, question):
     
     #try loading current from database before just setting to min
     possibledbvalue = get_value_for_run_question(get_runid_from_request(request), question.id)
-    if not possibledbvalue == None:
+    
+    #you can't eval none nor can you eval empty
+    if not possibledbvalue == None and len(possibledbvalue) > 0:
         valueaslist = ast.literal_eval(possibledbvalue)
         current = valueaslist[0]
     else:        
@@ -48,7 +50,8 @@ def process_range_or_number(question, answer):
 
     ans = answer['ANSWER']
     if not ans:
-        if question.is_required():
+        required = question.getcheckdict().get('required', 0)
+        if required:
             raise AnswerException(_(u"Field cannot be blank"))
         else:
             return []
