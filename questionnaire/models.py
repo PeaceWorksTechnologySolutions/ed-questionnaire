@@ -423,7 +423,10 @@ class Choice(models.Model):
 
     class Meta:
         translate = ('text',)
-
+        index_together = [
+            ['value'],
+            ]
+        
 
 class Answer(models.Model):
     subject = models.ForeignKey(Subject, help_text = u'The user who supplied this answer')
