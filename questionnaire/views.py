@@ -427,6 +427,7 @@ def questionnaire(request, runcode=None, qs=None):
     questionnaire = runinfo.questionset.questionnaire
     questionset = runinfo.questionset
 
+
     # to confirm that we have the correct answers
     expected = questionset.questions()
 
@@ -716,6 +717,7 @@ def show_questionnaire(request, runinfo, errors={}):
     if debug_questionnaire:
         current_answers = Answer.objects.filter(subject=runinfo.subject, runid=runinfo.runid).order_by('id')
 
+
     r = r2r("questionnaire/questionset.html", request,
             questionset=runinfo.questionset,
             runinfo=runinfo,
@@ -733,6 +735,7 @@ def show_questionnaire(request, runinfo, errors={}):
     )
     r['Cache-Control'] = 'no-cache'
     r['Expires'] = "Thu, 24 Jan 1980 00:00:00 GMT"
+    r.set_cookie('questionset_id', str(questionset.id))    
     return r
 
 
