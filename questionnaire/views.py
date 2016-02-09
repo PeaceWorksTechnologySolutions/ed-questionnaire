@@ -372,6 +372,10 @@ def questionnaire(request, runcode=None, qs=None):
         commit()
         return HttpResponseRedirect('/')
 
+    if runinfo.questionset.questionnaire.admin_access_only == 1:
+        if not request.user.is_superuser:
+            return HttpResponseRedirect(runinfo.questionset.questionnaire.redirect_url)
+
     # let the runinfo have a piggy back ride on the request
     # so we can easily use the runinfo in places like the question processor
     # without passing it around

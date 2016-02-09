@@ -76,6 +76,7 @@ class Questionnaire(models.Model):
     redirect_url = models.CharField(max_length=128, help_text="URL to redirect to when Questionnaire is complete. Macros: $SUBJECTID, $RUNID, $LANG", default="/static/complete.html")
     html = models.TextField(u'Html', blank=True)
     parse_html = models.BooleanField("Render html instead of name for survey?", null=False, default=False)
+    admin_access_only = models.BooleanField("Only allow access to logged in users? (This allows entering paper surveys without allowing new external submissions)", null=False, default=False)
 
     def __unicode__(self):
         return self.name
