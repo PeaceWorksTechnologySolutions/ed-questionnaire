@@ -278,7 +278,7 @@ class RunInfo(models.Model):
 class RunInfoHistory(models.Model):
     subject = models.ForeignKey(Subject)
     runid = models.CharField(max_length=32)
-    completed = models.DateField()
+    completed = models.DateTimeField()
     tags = models.TextField(
             blank=True,
             help_text=u"Tags used on this run, separated by commas"
