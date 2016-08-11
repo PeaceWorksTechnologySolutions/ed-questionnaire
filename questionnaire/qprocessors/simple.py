@@ -64,7 +64,7 @@ def question_yesno(request, question):
     }
 
 
-@question_proc('open', 'open-textfield')
+@question_proc('open', 'open-textfield', 'postcode-canada')
 def question_open(request, question):
     key = "question_%s" % question.number
     value = question.getcheckdict().get('default', '')
@@ -127,21 +127,16 @@ add_type('choice-yesnodontknow', 'Yes/No/Don\'t know Choice [radio]')
 @answer_proc('postcode-canada')
 def process_postcode_canada(question, answer):
     result=re.match(r'^([a-zA-Z][0-9][a-zA-Z])\s*([0-9][a-zA-Z][0-9])$', answer['ANSWER'])
-    print result
     if(result):
-        return '{0} {1}'.format(result.group(1), result.group(2)).upper()
+        return dumps(['{0} {1}'.format(result.group(1), result.group(2)).upper()])
     else:
         raise AnswerException(_(u'Invalid Postal Code'))
 
-add_type('postcode-canada', 'Canadian Postal Code')
+add_type('postcode-canada', 'Canadian Postal Code [input]')
 
 
 @answer_proc('comment')
 def process_comment(question, answer):
     pass
 
-
 add_type('comment', 'Comment Only')
-
-
-
