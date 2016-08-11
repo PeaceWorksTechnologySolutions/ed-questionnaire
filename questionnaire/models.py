@@ -385,7 +385,7 @@ class Question(models.Model):
         res = None
         if 'samechoicesas' in parse_checks(self.checks):
             number_to_grab_from = parse_checks(self.checks)['samechoicesas']
-            choicesource = Question.objects.get(number=number_to_grab_from)
+            choicesource = Question.objects.get(number=number_to_grab_from, questionset__questionnaire=self.questionset.questionnaire)
             if not choicesource == None:
                 res = Choice.objects.filter(question=choicesource).order_by('sortid')
         else:        
