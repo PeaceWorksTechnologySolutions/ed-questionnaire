@@ -371,9 +371,9 @@ class Question(models.Model):
         return self
 
     def display_number(self):
-        "Return either the number alone or the non-number part of the question number indented"
+        "Return either the number alone or the non-number part of the question number indented, depending on the check option \"fullnumber\""
         m = _numre.match(self.number)
-        if m:
+        if(m and not ("fullnumber" in parse_checks(self.checks))):
             sub = m.group(2)
             return "&nbsp;&nbsp;&nbsp;" + sub
         return self.number
