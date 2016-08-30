@@ -622,6 +622,7 @@ def show_questionnaire(request, runinfo, errors={}):
             'qnum_class': (_qnum % 2 == 0) and " qeven" or " qodd",
             'qalpha_class': _qalpha and (ord(_qalpha[-1]) % 2 \
                                          and ' alodd' or ' aleven') or '',
+            'column': question.column
         }
 
         # substitute answer texts

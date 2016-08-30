@@ -404,6 +404,14 @@ class Question(models.Model):
                 raise Exception("When using custom types, you must have type=<name> in the additional checks field")
             return cd.get('type')
         return t
+    
+    @property
+    def column(self):
+        if("column" in self.getcheckdict()):
+            if self.getcheckdict()["column"] not in ["left", "right", "full"]:
+                raise Exception("Invalid column value. Possible column values are \"left\", \"right\", and \"full\"")
+            return self.getcheckdict()["column"]
+        return "full"
 
     def questioninclude(self):
         return "questionnaire/" + self.get_type() + ".html"

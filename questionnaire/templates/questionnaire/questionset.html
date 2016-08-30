@@ -88,7 +88,7 @@
         {% endif %}
         {% with errors|dictget:question.number as error %}
 
-            <div class="question type_{{ qdict.qtype }} {% if error %} error prepend-top{% endif %}{{ qdict.qnum_class }}{{ qdict.qalpha_class }}" id="qc_{{ question.number }}" {{qdict.checkstring|safe}} style="{{qdict.css_style}}"> 
+		<div class="question type_{{ qdict.qtype }} {% if error %} error prepend-top{% endif %}{{ qdict.qnum_class }}{{ qdict.qalpha_class }} column-{{qdict.column}}" id="qc_{{ question.number }}" {{qdict.checkstring|safe}} style="{{qdict.css_style}}"> 
 
                 {% if request.user.is_staff %}
                     <span class="pull-right">
