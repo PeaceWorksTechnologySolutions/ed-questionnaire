@@ -375,7 +375,7 @@ class Question(models.Model):
         m = _numre.match(self.number)
         if("numberformat" in self.getcheckdict()):
             if self.getcheckdict()["numberformat"]=="none":
-                return "&nbsp;&nbsp;&nbsp;&nbsp;"
+                return ""
             if self.getcheckdict()["numberformat"]=="numeric":
                 return m.group(1)
             if self.getcheckdict()["numberformat"]=="non-numeric":
