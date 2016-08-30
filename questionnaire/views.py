@@ -605,7 +605,8 @@ def show_questionnaire(request, runinfo, errors={}):
 
     #we make it clear to the user that we're going to sort by sort id then number, so why wasn't it doing that?
     questions = sorted(questions, key=lambda question: (question.sort_id, question.number))
-
+    previous_column=False
+    first=True
     for question in questions:
         # if we got here the questionset will at least contain one question
         # which passes, so this is all we need to check for
@@ -622,8 +623,12 @@ def show_questionnaire(request, runinfo, errors={}):
             'qnum_class': (_qnum % 2 == 0) and " qeven" or " qodd",
             'qalpha_class': _qalpha and (ord(_qalpha[-1]) % 2 \
                                          and ' alodd' or ' aleven') or '',
-            'column': question.column
+            'column': question.column,
+            'new_column': question.column != previous_column,
+            'first_question': first,
         }
+        previous_column=question.column
+        first=False
 
         # substitute answer texts
         substitute_answer(qvalues, question)

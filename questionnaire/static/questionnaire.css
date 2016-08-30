@@ -132,3 +132,8 @@ input.sending {
 .hoverable {
     color: #79E2E8;
 }
+.question-column
+{
+    width: 50%;
+    display: inline-block;
+}
