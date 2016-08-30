@@ -373,12 +373,9 @@ class Question(models.Model):
     def display_number(self):
         "Return either the number alone or the non-number part of the question number indented, depending on the check option \"fullnumber\""
         m = _numre.match(self.number)
-        if(m and not ("numberformat" in self.getcheckdict())):
-            sub = m.group(2)
-            return "&nbsp;&nbsp;&nbsp;" + sub
-        elif("numberformat" in self.getcheckdict()):
+        if("numberformat" in self.getcheckdict()):
             if self.getcheckdict()["numberformat"]=="none":
-                return ""
+                return "&nbsp;&nbsp;&nbsp;&nbsp;"
             if self.getcheckdict()["numberformat"]=="numeric":
                 return m.group(1)
             if self.getcheckdict()["numberformat"]=="non-numeric":
@@ -386,6 +383,9 @@ class Question(models.Model):
             if self.getcheckdict()["numberformat"]=="full":
                 return self.number
             raise Exception("numberformat must be one of \"none\", \"numeric\", \"non-numeric\", and \"full\"")
+        elif(m):
+            sub = m.group(2)
+            return "&nbsp;&nbsp;&nbsp;" + sub
         return self.number
 
     def choices(self):
