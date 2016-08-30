@@ -110,7 +110,7 @@
                     {% include qdict.template %}
                 {% else %}
                     <div class="question-text {% if qdict.required %}required{% endif %}">
-						<span class="qnumber">{% if question.display_number %}{{ question.display_number|safe }}.{% else %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}</span>
+						<span class="qnumber">{% if question.display_number %}{{ question.display_number|safe }}.{% endif %}</span>
                         {% if question.parse_html %}
                         {{ question.text|safe }}
                         {% else %}
