@@ -606,7 +606,7 @@ def show_questionnaire(request, runinfo, errors={}):
     #we make it clear to the user that we're going to sort by sort id then number, so why wasn't it doing that?
     questions = sorted(questions, key=lambda question: (question.sort_id, question.number))
     previous_column=False
-    first=True
+    first_question=True
     for question in questions:
         # if we got here the questionset will at least contain one question
         # which passes, so this is all we need to check for
@@ -625,10 +625,10 @@ def show_questionnaire(request, runinfo, errors={}):
                                          and ' alodd' or ' aleven') or '',
             'column': question.column,
             'new_column': question.column != previous_column,
-            'first_question': first,
+            'first_question': first_question,
         }
         previous_column=question.column
-        first=False
+        first_question=False
 
         # substitute answer texts
         substitute_answer(qvalues, question)
