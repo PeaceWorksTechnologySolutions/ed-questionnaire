@@ -136,4 +136,5 @@ input.sending {
 {
     width: 50%;
     display: inline-block;
+    vertical-align: top;
 }
