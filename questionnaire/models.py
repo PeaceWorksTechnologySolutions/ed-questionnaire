@@ -118,7 +118,7 @@ class QuestionSet(models.Model):
     questionnaire = models.ForeignKey(Questionnaire)
     sortid = models.IntegerField() # used to decide which order to display in
     heading = models.CharField(max_length=64)
-    checks = models.CharField(max_length=256, blank=True,
+    checks = models.CharField(max_length=1024, blank=True,
         help_text = """Current options are 'femaleonly' or 'maleonly' and shownif="QuestionNumber,Answer" which takes the same format as <tt>requiredif</tt> for questions.""")
     text = models.TextField(u'Text', help_text="This is interpreted as Textile: <a href='http://en.wikipedia.org/wiki/Textile_%28markup_language%29' target='_blank'>http://en.wikipedia.org/wiki/Textile_(markup_language)</a>")
 
@@ -317,7 +317,7 @@ class Question(models.Model):
         "choose from. If a question is multiple-choice, enter the choices " \
         "this user can choose from below'.")
     extra = models.CharField(u"Extra information", max_length=512, blank=True, null=True, help_text=u"Extra information (use  on question type)")
-    checks = models.CharField(u"Additional checks", max_length=512, blank=True,
+    checks = models.CharField(u"Additional checks", max_length=1024, blank=True,
         null=True, help_text="Additional checks to be performed for this "
         "value (space separated)  <br /><br />"
         "For text fields, <tt>required</tt> is a valid check.<br />"
