@@ -129,7 +129,8 @@ def question_multiple(request, question):
         "template"  : "questionnaire/choice-multiple-freeform.html",
         "required" : cd.get("required", False) and cd.get("required") != "0",
         "jstriggers": jstriggers,
-        "qvalues": qvalues
+        "qvalues": qvalues,
+	"placeholder": cd.get('placeholder', ''),
     }
 
 @answer_proc('choice-multiple', 'choice-multiple-freeform', 'choice-multiple-values')
