@@ -158,8 +158,12 @@ def process_multiple(question, answer):
         except ValueError:
             pass #leave maxcount at 9999
 
-    if maxcount and maxcount > question.choices().count():
-        maxcount = question.choices().count()
+    extracount = int(question.getcheckdict().get('extracount', 0))
+    if not extracount and question.type == 'choice-multiple-freeform':
+        extracount = 1
+
+    if maxcount and maxcount > (question.choices().count() + extracount):
+        maxcount = question.choices().count() + extracount
 
     for k, v in answer.items():
         if k.startswith('multiple') and not k.endswith('value'):
